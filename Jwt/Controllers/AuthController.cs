@@ -48,11 +48,18 @@ namespace Jwt.Controllers
             return Ok(token);
         }
 
+        [HttpGet(Name = "GetUsers"), Authorize(Roles = "Admin")]
+        public IEnumerable<string> Get()
+        {
+            return user.Username.Split('\u002C');
+        }
+
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
             {
-                new(ClaimTypes.Name, user.Username)
+                new(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, "Admin")
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
